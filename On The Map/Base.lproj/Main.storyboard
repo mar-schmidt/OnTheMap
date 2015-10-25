@@ -654,6 +654,11 @@ today?</string>
             <objects>
                 <tabBarController storyboardIdentifier="TabBarController" id="bLi-cP-zTG" customClass="TabBarController" customModule="On_The_Map" customModuleProvider="target" sceneMemberID="viewController">
                     <navigationItem key="navigationItem" title="On The Map" id="ZLh-iA-KM0">
+                        <barButtonItem key="leftBarButtonItem" title="Logout" id="8s2-d1-rE5">
+                            <connections>
+                                <action selector="logout:" destination="bLi-cP-zTG" id="Gjd-rF-y1K"/>
+                            </connections>
+                        </barButtonItem>
                         <rightBarButtonItems>
                             <barButtonItem systemItem="refresh" id="TZu-cc-elD">
                                 <connections>

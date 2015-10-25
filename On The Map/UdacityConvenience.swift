@@ -78,6 +78,7 @@ extension UdacityClient {
             }
         }
     }
+    
     func getUserData(udacityUser: UdacityUser!, completionHandler: (success: Bool, result: UdacityUser?, error: NSError?) -> Void)  {
         /* 1. Specify parameters, method and HTTP body */
         var mutableMethod = UdacityClient.Methods.UserData
@@ -100,6 +101,17 @@ extension UdacityClient {
                 }
             }
         }
-
+    }
+    
+    func logoutFromSession(udacityUser: UdacityUser?, completionHandler: (success: Bool, error: NSError?) -> Void)  {
+        
+        /* 1. Specify parameters, method (if has {key}), and HTTP body (if POST) */
+        
+        /* 2. Make the request */
+        taskForDELETEMethod(Methods.Logout, parameters: nil) { success, error in
+            
+            /* 3. Send the desired value(s) to completion handler */
+            completionHandler(success: success, error: error)
+        }
     }
 }

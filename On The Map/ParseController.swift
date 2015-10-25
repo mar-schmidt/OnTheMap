@@ -10,6 +10,7 @@ import UIKit
 
 protocol ParseControllerDelegate {
     func receivedNewStudentLocations()
+    func errorWhenReceivingStudentLocations()
 }
 
 class ParseController: NSObject {
@@ -27,11 +28,13 @@ class ParseController: NSObject {
     
     func getStudentLocationsWithLimit(limit: Int, skip: Int, order: String?) {
         ParseClient.sharedInstance().getStudentLocationsWithLimit(limit, skip: skip, order: order) { (result, error) -> Void in
-            
+
             if let studentLocations = result {
                 self.datasource.locations = studentLocations
                 print("Received \(self.datasource.locations.count) new locations")
                 self.delegate?.receivedNewStudentLocations()
+            } else {
+                self.delegate?.errorWhenReceivingStudentLocations()
             }
         }
     }

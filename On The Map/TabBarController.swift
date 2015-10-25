@@ -29,5 +29,19 @@ class TabBarController: UITabBarController {
     }
     
     @IBAction func logout(sender: AnyObject) {
+        let udacityClient = UdacityClient.sharedInstance()
+        udacityClient.logoutFromSession(nil) { (success, error) -> Void in
+            if success {
+                self.dismissViewControllerAnimated(true, completion: nil)
+            } else {
+                let alertController = UIAlertController(title: "Error", message: "Could not logout from Udacity right now", preferredStyle: UIAlertControllerStyle.Alert)
+                let dismissAction = UIAlertAction(title: "OK", style: UIAlertActionStyle.Cancel, handler: nil)
+                alertController.addAction(dismissAction)
+                
+                dispatch_async(dispatch_get_main_queue(), {
+                    self.presentViewController(alertController, animated: true, completion: nil)
+                })
+            }
+        }
     }
 }

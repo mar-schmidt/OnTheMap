@@ -49,4 +49,13 @@ class ListViewController: UIViewController, UITableViewDelegate, UITableViewData
         print("Adding new locations to List View")
         self.tableView.reloadData()
     }
+    
+    func errorWhenReceivingStudentLocations() {
+        let alertController = UIAlertController(title: "Error", message: "Couldn't fetch student locations. Please try again", preferredStyle: UIAlertControllerStyle.Alert)
+        let dismissAction = UIAlertAction(title: "OK", style: UIAlertActionStyle.Cancel, handler: nil)
+        alertController.addAction(dismissAction)
+        
+        self.presentViewController(alertController, animated: true, completion: nil)
+
+    }
 }

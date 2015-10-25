@@ -20,6 +20,7 @@ extension UdacityClient {
         // Authentication
         static let AuthenticationSessionNew = "session"
         static let UserData = "users/{user_id}"
+        static let Logout = "session"
     }
     
     struct URLKeys {

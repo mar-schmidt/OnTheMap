@@ -74,6 +74,15 @@ class MapViewController: UIViewController, MKMapViewDelegate ,ParseControllerDel
         print("Adding new locations to Map View")
     }
     
+    func errorWhenReceivingStudentLocations() {
+        let alertController = UIAlertController(title: "Error", message: "Couldn't fetch student locations. Please try again", preferredStyle: UIAlertControllerStyle.Alert)
+        let dismissAction = UIAlertAction(title: "OK", style: UIAlertActionStyle.Cancel, handler: nil)
+        alertController.addAction(dismissAction)
+        
+        self.presentViewController(alertController, animated: true, completion: nil)
+        
+    }
+    
     // MKMapViewDelegate
     
     // Here we create a view with a "right callout accessory view". You might choose to look into other

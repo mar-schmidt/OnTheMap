@@ -47,12 +47,7 @@ class UdacityClient: NSObject {
         request.addValue("application/json", forHTTPHeaderField: "Accept")
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         do {
-            /*
-            request.HTTPBody = "{\"udacity\": {\"username\": \"marcus.ronelius@gmail.com\", \"password\": \"nintendo\"}}".dataUsingEncoding(NSUTF8StringEncoding)
-            */
-            
             request.HTTPBody = try! NSJSONSerialization.dataWithJSONObject(jsonBody, options: .PrettyPrinted)
-            
         }
         
         /* 4. Make the request */
@@ -155,6 +150,64 @@ class UdacityClient: NSObject {
         
         return task
     }
+    
+    // DELETE
+    func taskForDELETEMethod(method: String, parameters: [String : AnyObject]?, completionHandler: (success: Bool, error: NSError?) -> Void) -> NSURLSessionDataTask {
+        
+        /* 1. Set the parameters */
+        let udacityUser = UdacityUser.sharedInstance()
+        
+        /* 2/3. Build the URL and configure the request */
+        let urlString = Constants.BaseURLSecure + method
+        let url = NSURL(string: urlString)!
+        let request = NSMutableURLRequest(URL: url)
+        request.HTTPMethod = "DELETE"
+        request.setValue(udacityUser.sessionId, forHTTPHeaderField: "X-XSRF-TOKEN")
+        request.addValue("application/json", forHTTPHeaderField: "Accept")
+        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        /* 4. Make the request */
+        let task = session.dataTaskWithRequest(request) { (data, response, error) in
+            
+            /* GUARD: Was there an error? */
+            guard (error == nil) else {
+                print("There was an error with your request: \(error)")
+                return
+            }
+            
+            /* Guard: Did we get a successful 2XX response? */
+            guard let statusCode = (response as? NSHTTPURLResponse)?.statusCode where statusCode >= 200 && statusCode <= 299 else {
+                
+                if let response = response as? NSHTTPURLResponse {
+                    print("Your request returned an invalid response! Status code: \(response.statusCode)!")
+                    
+                } else if let response = response {
+                    print("Your request returned an invalid response! Response: \(response)!")
+                } else {
+                    print("Your request returned an invalid response!")
+                }
+                
+                let userInfo = [NSLocalizedDescriptionKey : "Error in response from Udacity: '\(response?.description)'"]
+                completionHandler(success: false, error: NSError(domain: "invalidResponseCompletionHandler", code: 1, userInfo: userInfo))
+                return
+            }
+            
+            /* Guard: Was there any data returned? */
+            guard let data = data else {
+                print("No data was returned by the request!")
+                return
+            }
+            
+            /* 5/6. Parse the data and use the data (happens in completion handler) */
+            completionHandler(success: true, error: nil)
+        }
+        
+        /* 7. Start the request */
+        task.resume()
+        
+        return task
+    }
+
 
     
     /* Helper: Given raw JSON, return a usable Foundation object */
