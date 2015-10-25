@@ -7,3 +7,9 @@
 //
 
 import Foundation
+
+extension ParseClient {
+    struct Api {
+        static let Key : String = "QuWThTdiRmTux3YaDseUSEpUKo7aBYM737yKd4gY"
+    }
+}
