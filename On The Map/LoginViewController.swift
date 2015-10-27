@@ -51,9 +51,10 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
     @IBAction func signUpButtonTapped(sender: AnyObject) {
         UIApplication.sharedApplication().openURL(NSURL(string: "https://www.udacity.com/account/auth#!/signup")!)
     }
+    
     // Actions
     @IBAction func loginButtonTapped(sender: AnyObject) {
-    
+        
         var textFieldArray = [UITextField]()
         textFieldArray.append(emailTextField)
         textFieldArray.append(passwordTextField)
@@ -63,39 +64,36 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
                 try inputExistAndValidForTextField(textField)
             }
         } catch InputError.MissingEmail {
-            self.displayError("Email is missing...")
+            self.displayError(nil, errorString: "Email is missing...")
             return
             
         } catch InputError.InvalidEmail {
-            self.displayError("Incorrect email format...")
+            self.displayError(nil, errorString: "Incorrect email format...")
             return
             
         } catch InputError.MissingPassword {
-            self.displayError("Password is missing...")
+            self.displayError(nil, errorString: "Password is missing...")
             return
         } catch {
             // Shouldnt happen
             return
         }
         
-        self.showLoadingView(true)
         for textField in textFieldArray {
             textField.resignFirstResponder()
         }
         
-        UdacityClient.sharedInstance().authenticateWithViewController(self, username: emailTextField.text, password: passwordTextField.text) { (success, errorString) -> Void in
+        self.showLoadingView(true)
+        
+        UdacityClient.sharedInstance().authenticateWithViewController(self, username: emailTextField.text, password: passwordTextField.text) { (success, error, errorString) -> Void in
             if success {
                 self.showLoadingView(false)
                 self.completeLogin()
             } else {
                 self.showLoadingView(false)
-                self.displayError(errorString)
+                self.displayError(error, errorString: errorString)
             }
         }
-    }
-    
-    func authenticate() {
-        
     }
     
     // LoginViewController
@@ -103,14 +101,36 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
         dispatch_async(dispatch_get_main_queue(), {
             self.errorTextLabel.text = ""
             let controller = self.storyboard!.instantiateViewControllerWithIdentifier("OnTheMapNavController") as! UINavigationController
+            
+            self.showLoadingView(false)
+            
             self.presentViewController(controller, animated: true, completion: nil)
         })
     }
     
-    func displayError(errorString: String?) {
+    func displayError(error: NSError?, errorString: String?) {
         dispatch_async(dispatch_get_main_queue(), {
+            
+            // http://stackoverflow.com/questions/27987048/shake-animation-for-uitextfield-uiview-in-swift
+            let animation = CABasicAnimation(keyPath: "position")
+            animation.duration = 0.02
+            animation.repeatCount = 4
+            animation.autoreverses = true
+            animation.fromValue = NSValue(CGPoint: CGPointMake(self.view.center.x - 10, self.view.center.y))
+            animation.toValue = NSValue(CGPoint: CGPointMake(self.view.center.x + 10, self.view.center.y))
+            self.view.layer.addAnimation(animation, forKey: "position")
+            
             if let errorString = errorString {
                 self.errorTextLabel.text = errorString
+                if let error = error {
+                    if error.domain == "badCredentials" {
+                        let alertController = UIAlertController(title: "Error", message: "You have entered wrong credentials. Please try again", preferredStyle: UIAlertControllerStyle.Alert)
+                        let dismissAction = UIAlertAction(title: "OK", style: UIAlertActionStyle.Cancel, handler: nil)
+                        alertController.addAction(dismissAction)
+                        
+                        self.presentViewController(alertController, animated: true, completion: nil)
+                    }
+                }
             }
         })
     }

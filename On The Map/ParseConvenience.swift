@@ -16,7 +16,7 @@ extension ParseClient {
         let parameters : [String : AnyObject] = [
             ParseClient.ParameterKeys.Limit: limit,
             ParseClient.ParameterKeys.Skip: skip,
-            //ParseClient.ParameterKeys.Order: order
+            ParseClient.ParameterKeys.Order: order!
         ]
         
         /* 2. Make the request */
@@ -72,6 +72,23 @@ extension ParseClient {
                 }
             }
         }
+    }
+    
+    func createStudentLocation(uniqueKey: String, firstName: String, lastName: String, mapString: String, mediaUrl: String, latitude: NSNumber, longitude: NSNumber) -> ParseStudentLocation {
+        // Create the studentLocation object
+        let studentLocationDict: [String : AnyObject] = [
+            JSONBodyKeys.UniqueKey: uniqueKey,
+            JSONBodyKeys.FirstName: firstName,
+            JSONBodyKeys.LastName: lastName,
+            JSONBodyKeys.MapString: mapString,
+            JSONBodyKeys.MediaUrl: mediaUrl,
+            JSONBodyKeys.Latitude: latitude,
+            JSONBodyKeys.Longitude: longitude
+        ]
+        
+        let studentLocation = ParseStudentLocation.studenLocationFromDictionary(studentLocationDict)
+        
+        return studentLocation
     }
     
     /* Helper: return a string from current date*/

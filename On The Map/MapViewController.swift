@@ -18,7 +18,17 @@ class MapViewController: UIViewController, MKMapViewDelegate ,ParseControllerDel
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
-        parseController.getStudentLocationsWithLimit(100, skip: 0, order: "")
+        parseController.getStudentLocationsWithLimit(100, skip: 0, order: "-updatedAt") { (result, error) -> Void in
+            if let error = error {
+                dispatch_async(dispatch_get_main_queue(), {
+                    let alertController = UIAlertController(title: "Error", message: "Error when receiving updated locations.\n\(error.localizedDescription) Please try again", preferredStyle: UIAlertControllerStyle.Alert)
+                    let dismissAction = UIAlertAction(title: "OK", style: UIAlertActionStyle.Cancel, handler: nil)
+                    alertController.addAction(dismissAction)
+                    
+                    self.presentViewController(alertController, animated: true, completion: nil)
+                })
+            }
+        }
     }
     
     override func viewWillAppear(animated: Bool) {

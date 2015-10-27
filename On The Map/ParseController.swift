@@ -26,7 +26,7 @@ class ParseController: NSObject {
         return Singleton.sharedInstance
     }
     
-    func getStudentLocationsWithLimit(limit: Int, skip: Int, order: String?) {
+    func getStudentLocationsWithLimit(limit: Int, skip: Int, order: String?, completionHandler: (result: [ParseStudentLocation]?, error: NSError?) -> Void) {
         ParseClient.sharedInstance().getStudentLocationsWithLimit(limit, skip: skip, order: order) { (result, error) -> Void in
 
             if let studentLocations = result {
@@ -36,6 +36,7 @@ class ParseController: NSObject {
             } else {
                 self.delegate?.errorWhenReceivingStudentLocations()
             }
+            completionHandler(result: result, error: error)
         }
     }
 }

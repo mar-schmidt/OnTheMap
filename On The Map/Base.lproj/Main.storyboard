@@ -407,10 +407,10 @@
                                     <constraint firstAttribute="trailing" secondItem="Lps-zs-jtc" secondAttribute="trailing" id="kxu-on-g9s"/>
                                 </constraints>
                             </stackView>
-                            <stackView opaque="NO" contentMode="scaleToFill" misplaced="YES" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="GpV-UW-pI3" userLabel="Share">
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="GpV-UW-pI3" userLabel="Share">
                                 <rect key="frame" x="532" y="20" width="40" height="30"/>
                                 <subviews>
-                                    <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="X7d-iD-W9g">
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="X7d-iD-W9g">
                                         <rect key="frame" x="0.0" y="0.0" width="40" height="30"/>
                                         <animations/>
                                         <fontDescription key="fontDescription" type="system" pointSize="15"/>
@@ -444,6 +444,43 @@
                                     <constraint firstAttribute="bottom" secondItem="X7d-iD-W9g" secondAttribute="bottom" id="yqd-O6-8T9"/>
                                 </constraints>
                             </stackView>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="LEZ-b3-s0Q" userLabel="Open link">
+                                <rect key="frame" x="443" y="20" width="65" height="30"/>
+                                <subviews>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="raf-KF-4Oz">
+                                        <rect key="frame" x="0.0" y="0.0" width="65" height="30"/>
+                                        <animations/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                        <state key="normal" title="Open link">
+                                            <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                        </state>
+                                        <connections>
+                                            <action selector="openLinkButtonTapped:" destination="rk4-An-RxO" eventType="touchUpInside" id="Ezs-0s-sUH"/>
+                                        </connections>
+                                    </button>
+                                </subviews>
+                                <animations/>
+                                <constraints>
+                                    <constraint firstItem="raf-KF-4Oz" firstAttribute="trailing" secondItem="LEZ-b3-s0Q" secondAttribute="trailingMargin" id="0ME-5D-VYf"/>
+                                    <constraint firstItem="raf-KF-4Oz" firstAttribute="bottom" secondItem="LEZ-b3-s0Q" secondAttribute="bottomMargin" id="22w-eF-Hrh"/>
+                                    <constraint firstAttribute="trailing" secondItem="raf-KF-4Oz" secondAttribute="trailing" id="4iM-B0-XzA"/>
+                                    <constraint firstItem="raf-KF-4Oz" firstAttribute="leading" secondItem="LEZ-b3-s0Q" secondAttribute="leading" id="53I-OW-O2N"/>
+                                    <constraint firstItem="raf-KF-4Oz" firstAttribute="leading" secondItem="LEZ-b3-s0Q" secondAttribute="leading" id="5ON-vZ-5Yx"/>
+                                    <constraint firstItem="raf-KF-4Oz" firstAttribute="top" secondItem="LEZ-b3-s0Q" secondAttribute="top" id="5q2-dt-YB1"/>
+                                    <constraint firstItem="raf-KF-4Oz" firstAttribute="leading" secondItem="LEZ-b3-s0Q" secondAttribute="leadingMargin" id="D9u-gz-Nej"/>
+                                    <constraint firstAttribute="trailing" secondItem="raf-KF-4Oz" secondAttribute="trailing" id="GQu-Mx-B47"/>
+                                    <constraint firstItem="raf-KF-4Oz" firstAttribute="centerX" secondItem="LEZ-b3-s0Q" secondAttribute="centerX" id="Ici-7y-Lk0"/>
+                                    <constraint firstItem="raf-KF-4Oz" firstAttribute="leading" secondItem="LEZ-b3-s0Q" secondAttribute="leading" id="Iuk-to-aE9"/>
+                                    <constraint firstItem="raf-KF-4Oz" firstAttribute="leading" secondItem="LEZ-b3-s0Q" secondAttribute="leading" id="eow-qV-b1p"/>
+                                    <constraint firstItem="raf-KF-4Oz" firstAttribute="centerY" secondItem="LEZ-b3-s0Q" secondAttribute="centerY" id="goy-9E-6Vi"/>
+                                    <constraint firstAttribute="bottom" secondItem="raf-KF-4Oz" secondAttribute="bottom" id="h2K-RA-5mB"/>
+                                    <constraint firstItem="raf-KF-4Oz" firstAttribute="top" secondItem="LEZ-b3-s0Q" secondAttribute="top" id="inw-OM-zz6"/>
+                                    <constraint firstItem="raf-KF-4Oz" firstAttribute="top" secondItem="LEZ-b3-s0Q" secondAttribute="top" id="rvs-s2-7wL"/>
+                                    <constraint firstItem="raf-KF-4Oz" firstAttribute="top" secondItem="LEZ-b3-s0Q" secondAttribute="top" id="sLv-FV-DOY"/>
+                                    <constraint firstAttribute="bottom" secondItem="raf-KF-4Oz" secondAttribute="bottom" id="tnH-xF-kC5"/>
+                                    <constraint firstItem="raf-KF-4Oz" firstAttribute="top" secondItem="LEZ-b3-s0Q" secondAttribute="topMargin" id="vKQ-5D-0Gf"/>
+                                </constraints>
+                            </stackView>
                         </subviews>
                         <animations/>
                         <color key="backgroundColor" red="0.24313725489999999" green="0.56470588239999997" blue="0.83137254900000002" alpha="1" colorSpace="calibratedRGB"/>
@@ -455,7 +492,9 @@
                             <constraint firstAttribute="trailingMargin" secondItem="GpV-UW-pI3" secondAttribute="trailing" constant="8" id="EOa-vD-4n4"/>
                             <constraint firstAttribute="trailing" secondItem="ls3-Se-o3a" secondAttribute="trailing" id="Jid-rc-qYw"/>
                             <constraint firstItem="Zve-W2-1Dg" firstAttribute="top" secondItem="Njg-Hl-fG9" secondAttribute="bottom" id="LJX-EY-Dqx"/>
+                            <constraint firstItem="GpV-UW-pI3" firstAttribute="leading" secondItem="LEZ-b3-s0Q" secondAttribute="trailing" constant="24" id="ROT-9V-fb6"/>
                             <constraint firstItem="GpV-UW-pI3" firstAttribute="top" secondItem="Zve-W2-1Dg" secondAttribute="top" id="d6w-eu-mTp"/>
+                            <constraint firstItem="LEZ-b3-s0Q" firstAttribute="top" secondItem="GpV-UW-pI3" secondAttribute="top" id="i4T-1D-Yyf"/>
                         </constraints>
                     </view>
                     <connections>

@@ -26,6 +26,18 @@ class PostingLinkViewController: UIViewController, MKMapViewDelegate, UITextFiel
         }
     }
     
+    @IBAction func openLinkButtonTapped(sender: AnyObject) {
+        let app = UIApplication.sharedApplication()
+        var linkString = linkTextField.text!
+        let linkUrl = NSURL(string: linkString)
+        
+        if !Reachability.isValidUrl(linkUrl) {
+            linkString = Reachability.applyHTTPSchemeForURL(linkUrl!)!
+        }
+        print("Opening URL: \(linkString)")
+        app.openURL(NSURL(string: linkString)!)
+    }
+    
     override func viewDidLoad() {
         // Set the color of the attributes placeholder text to white
         self.linkTextField.attributedPlaceholder = NSAttributedString(string:"Enter a link to share",
@@ -59,6 +71,9 @@ class PostingLinkViewController: UIViewController, MKMapViewDelegate, UITextFiel
             
             return
         }
+        
+        self.showLoadingIndicatorForButton(self.shareButton, show: true)
+        
         if (!Reachability.hasHTTPSchemeForString(linkTextField.text!)) {
             let linkUrl = NSURL(string: linkTextField.text!)
             linkTextField.text = Reachability.applyHTTPSchemeForURL(linkUrl!)
@@ -66,27 +81,47 @@ class PostingLinkViewController: UIViewController, MKMapViewDelegate, UITextFiel
         
         let udacityUser = UdacityUser.sharedInstance()
         
-        // Create the studentLocation object
-        let studentLocationDict: [String : AnyObject] = [
-            ParseClient.JSONBodyKeys.UniqueKey: udacityUser.uniqueKey as String!,
-            ParseClient.JSONBodyKeys.FirstName: udacityUser.firstName as String!,
-            ParseClient.JSONBodyKeys.LastName: udacityUser.lastName as String!,
-            ParseClient.JSONBodyKeys.MapString: self.mapString,
-            ParseClient.JSONBodyKeys.MediaUrl: self.linkTextField.text!,
-            ParseClient.JSONBodyKeys.Latitude: self.pointAnnotation.coordinate.latitude,
-            ParseClient.JSONBodyKeys.Longitude: self.pointAnnotation.coordinate.longitude
-        ]
-        
-        let studentLocation = ParseStudentLocation.studenLocationFromDictionary(studentLocationDict)
+        let studentLocation = ParseClient.sharedInstance().createStudentLocation(
+            udacityUser.uniqueKey as String!,
+            firstName: udacityUser.firstName as String!,
+            lastName: udacityUser.lastName as String!,
+            mapString: self.mapString,
+            mediaUrl: self.linkTextField.text!,
+            latitude: self.pointAnnotation.coordinate.latitude,
+            longitude: self.pointAnnotation.coordinate.longitude
+        )
         
         ParseClient.sharedInstance().postStudentLocation(studentLocation) { (result, error) -> Void in
-            if let studentLocation = result {
+            if let error = error {
+                if error.code == 1 {
+                    self.presentAlertWithTitle("Error", message: "Error in response from server")
+                    self.showLoadingIndicatorForButton(self.shareButton, show: false)
+                    return
+                } else {
+                    self.presentAlertWithTitle("Error", message: "Error when posting your location")
+                    self.showLoadingIndicatorForButton(self.shareButton, show: false)
+                    return
+                }
+            }
+            else if let studentLocation = result {
                 self.datasource.locations.append(studentLocation)
                 print("New studentLocation created with objectId: \(studentLocation.objectId)")
+                
+                self.showLoadingIndicatorForButton(self.shareButton, show: false)
                 
                 self.dismissToPresentingViewController()
             }
         }
+    }
+    
+    func presentAlertWithTitle(title: String, message: String) {
+        dispatch_async(dispatch_get_main_queue(), {
+            let alertController = UIAlertController(title: title, message: message, preferredStyle: UIAlertControllerStyle.Alert)
+            let dismissAction = UIAlertAction(title: "OK", style: UIAlertActionStyle.Cancel, handler: nil)
+            alertController.addAction(dismissAction)
+        
+            self.presentViewController(alertController, animated: true, completion: nil)
+        })
     }
     
     func dismissToPresentingViewController() {
@@ -98,7 +133,17 @@ class PostingLinkViewController: UIViewController, MKMapViewDelegate, UITextFiel
             // go back to MainMenuView as the eyes of the user
             presentingViewController.dismissViewControllerAnimated(true, completion: { () -> Void in
                 let parseController = ParseController.sharedInstance()
-                parseController.getStudentLocationsWithLimit(100, skip: 0, order: "")
+                parseController.getStudentLocationsWithLimit(100, skip: 0, order: "-updatedAt", completionHandler: { (result, error) -> Void in
+                    if let error = error {
+                        dispatch_async(dispatch_get_main_queue(), {
+                            let alertController = UIAlertController(title: "Error", message: "Error when receiving updated locations.\n\(error.localizedDescription) Please try again", preferredStyle: UIAlertControllerStyle.Alert)
+                            let dismissAction = UIAlertAction(title: "OK", style: UIAlertActionStyle.Cancel, handler: nil)
+                            alertController.addAction(dismissAction)
+                            
+                            self.presentViewController(alertController, animated: true, completion: nil)
+                        })
+                    }
+                })
             })
         }
     }
@@ -121,6 +166,37 @@ class PostingLinkViewController: UIViewController, MKMapViewDelegate, UITextFiel
         })
         
         return pinView
+    }
+    
+    func showLoadingIndicatorForButton(button: UIButton, show: Bool) {
+        let frame = button.frame
+        
+        if show {
+            button.hidden = true
+            
+            let activityIndicator = UIActivityIndicatorView()
+            // Set the frame of the activityIndicator to the same frame as the button
+            activityIndicator.frame = frame
+            
+            activityIndicator.activityIndicatorViewStyle = .Gray
+            activityIndicator.translatesAutoresizingMaskIntoConstraints = true
+            
+            // Add the activityIndicator as subview of buttons superview
+            button.superview?.addSubview(activityIndicator)
+            
+            // Start the spinning
+            activityIndicator.startAnimating()
+        } else {
+            // Check for the activityView which is still spinning. And then remove it
+            for view in (button.superview?.subviews)! {
+                if let activityView = view as? UIActivityIndicatorView {
+                    activityView.removeFromSuperview()
+                }
+            }
+            
+            // If show is false
+            button.hidden = false
+        }
     }
     
     func textField(textField: UITextField, shouldChangeCharactersInRange range: NSRange, replacementString string: String) -> Bool {

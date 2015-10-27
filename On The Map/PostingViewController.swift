@@ -13,9 +13,6 @@ class PostingViewController: UIViewController, UITextFieldDelegate {
 
     @IBOutlet weak var nextButton: UIButton!
     @IBOutlet weak var locationTextField: UITextField!
-    var localSearchRequest:MKLocalSearchRequest!
-    var localSearch:MKLocalSearch!
-    var localSearchResponse:MKLocalSearchResponse!
     var error:NSError!
     var pointAnnotation:UdacityPointAnnotation!
     var pinAnnotationView:MKPinAnnotationView!
@@ -25,7 +22,7 @@ class PostingViewController: UIViewController, UITextFieldDelegate {
         locationTextField.attributedPlaceholder = NSAttributedString(string:"Enter your location here",
             attributes:[NSForegroundColorAttributeName: UIColor.whiteColor()])
         
-        self.toggleNextButton(false)
+        self.toggleNextButton(self.nextButton, enabled: false)
     }
     
     @IBAction func findOnTheMap(sender: AnyObject) {
@@ -37,39 +34,84 @@ class PostingViewController: UIViewController, UITextFieldDelegate {
             
             self.presentViewController(alertController, animated: true, completion: nil)
         } else {
-            self.toggleNextButton(false)
+            self.showLoadingIndicatorForButton(self.nextButton, show: true)
+            self.toggleNextButton(self.nextButton, enabled: false)
             self.makeSearchRequest(self)
         }
     }
     
     func makeSearchRequest(sender: AnyObject) {
-        localSearchRequest = MKLocalSearchRequest()
-        localSearchRequest.naturalLanguageQuery = locationTextField.text
-        localSearch = MKLocalSearch(request: localSearchRequest)
+        let geoCoder = CLGeocoder()
         
-        localSearch.startWithCompletionHandler { (localSearchResponse, error) -> Void in
-            if localSearchResponse == nil {
-                let alertController = UIAlertController(title: nil, message: "Place Not Found", preferredStyle: UIAlertControllerStyle.Alert)
-                alertController.addAction(UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.Default, handler: nil))
-                self.presentViewController(alertController, animated: true, completion: nil)
+        geoCoder.geocodeAddressString(locationTextField.text!, completionHandler: { (placemark, error) -> Void in
+            if error != nil {
+                print("Error: \(error!.localizedDescription)")
                 
-                self.toggleNextButton(true)
+                self.showAlertViewWithTitle("", message: "Place not found")
+                self.showLoadingIndicatorForButton(self.nextButton, show: false)
+                self.toggleNextButton(self.nextButton, enabled: true)
                 
                 return
             }
+            if placemark!.count > 0 {
+                let pm = placemark![0] as CLPlacemark
+                print("\(pm.locality), \(pm.country)")
+                
+                self.pointAnnotation = UdacityPointAnnotation()
+                self.pointAnnotation.title = self.locationTextField.text
+                let lat = pm.location?.coordinate.latitude
+                let long = pm.location?.coordinate.longitude
+                self.pointAnnotation.coordinate = CLLocationCoordinate2D(latitude: lat!, longitude:long!)
+                
+                self.showLoadingIndicatorForButton(self.nextButton, show: false)
+                self.toggleNextButton(self.nextButton, enabled: true)
+                
+                self.performSegueWithIdentifier("showPostingLinkViewController", sender: sender)
+            } else {
+                print("Error with data")
+                self.showAlertViewWithTitle("", message: "Place not found")
+                self.showLoadingIndicatorForButton(self.nextButton, show: false)
+                self.toggleNextButton(self.nextButton, enabled: true)
+            }
+        })
+    }
+    
+    func showAlertViewWithTitle(title: String, message: String) {
+        dispatch_async(dispatch_get_main_queue(), {
+            let alertController = UIAlertController(title: title, message: message, preferredStyle: UIAlertControllerStyle.Alert)
+            alertController.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.Default, handler: nil))
+            self.presentViewController(alertController, animated: true, completion: nil)
+        })
+    }
+    
+    func showLoadingIndicatorForButton(button: UIButton, show: Bool) {
+        let frame = button.frame
+        
+        if show {
+            button.hidden = true
             
-            self.pointAnnotation = UdacityPointAnnotation()
-            self.pointAnnotation.title = self.locationTextField.text
-            self.pointAnnotation.coordinate = CLLocationCoordinate2D(
-                latitude: localSearchResponse!.boundingRegion.center.latitude,
-                longitude:localSearchResponse!.boundingRegion.center.longitude
-            )
-            print("Lat: \(localSearchResponse!.boundingRegion.center.latitude) Long: \(localSearchResponse!.boundingRegion.center.longitude)")
+            let activityIndicator = UIActivityIndicatorView()
+            // Set the frame of the activityIndicator to the same frame as the button
+            activityIndicator.frame = frame
             
-            self.toggleNextButton(true)
+            activityIndicator.activityIndicatorViewStyle = .Gray
+            activityIndicator.translatesAutoresizingMaskIntoConstraints = true
             
-            self.performSegueWithIdentifier("showPostingLinkViewController", sender: sender)
+            // Add the activityIndicator as subview of buttons superview
+            button.superview?.addSubview(activityIndicator)
             
+            // Start the spinning
+            activityIndicator.startAnimating()
+        } else {
+            // Check for the activityView which is still spinning. And then remove it
+            for view in (button.superview?.subviews)! {
+                if let activityView = view as? UIActivityIndicatorView {
+                    activityView.removeFromSuperview()
+                }
+            }
+            
+            // If show is false
+            button.hidden = false
         }
     }
     
@@ -96,19 +138,19 @@ class PostingViewController: UIViewController, UITextFieldDelegate {
         let newLength = text!.characters.count + string.characters.count - range.length
         
         if newLength == 0 {
-            self.toggleNextButton(false)
+            self.toggleNextButton(self.nextButton, enabled: false)
         } else {
-            self.toggleNextButton(true)
+            self.toggleNextButton(self.nextButton, enabled: true)
         }
         
         return true
     }
     
-    func toggleNextButton(enabled: Bool) {
+    func toggleNextButton(button: UIButton, enabled: Bool) {
         if enabled {
-            nextButton.enabled = true
+            button.enabled = true
         } else {
-            nextButton.enabled = false
+            button.enabled = false
         }
     }
 

@@ -19,7 +19,7 @@ extension UdacityClient {
     Step 1: Get session id
     */
     
-    func authenticateWithViewController(hostViewController: UIViewController, username:String!, password:String!, completionHandler: (success: Bool, errorString: String?) -> Void) {
+    func authenticateWithViewController(hostViewController: UIViewController, username:String!, password:String!, completionHandler: (success: Bool, error: NSError?, errorString: String?) -> Void) {
         
         self.postSessionId(username, password: password) { (success, result, error) -> Void in
             var detailedError = error?.localizedDescription
@@ -30,11 +30,12 @@ extension UdacityClient {
             else {
                 if error?.domain == "badCredentials" {
                     detailedError = "Bad Credentials"
+                    
                 } else {
                     detailedError = "Problem occurred when contacting Udacity"
                 }
             }
-            completionHandler(success: success, errorString: detailedError)
+            completionHandler(success: success, error: error, errorString: detailedError)
         }
         
     }
