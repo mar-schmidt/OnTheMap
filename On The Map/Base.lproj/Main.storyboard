@@ -718,6 +718,7 @@ today?</string>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                     </tabBar>
                     <connections>
+                        <outlet property="logoutButton" destination="8s2-d1-rE5" id="XvJ-7y-vu7"/>
                         <segue destination="XUS-EG-U4P" kind="relationship" relationship="viewControllers" id="Io6-UT-BcO"/>
                         <segue destination="Tsb-P8-qje" kind="relationship" relationship="viewControllers" id="eLO-3O-jdf"/>
                     </connections>

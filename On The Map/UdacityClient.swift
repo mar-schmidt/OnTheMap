@@ -163,6 +163,7 @@ class UdacityClient: NSObject {
         let urlString = Constants.BaseURLSecure + method
         let url = NSURL(string: urlString)!
         let request = NSMutableURLRequest(URL: url)
+        request.timeoutInterval = 10
         request.HTTPMethod = "DELETE"
         request.setValue(udacityUser.sessionId, forHTTPHeaderField: "X-XSRF-TOKEN")
         request.addValue("application/json", forHTTPHeaderField: "Accept")
@@ -174,6 +175,7 @@ class UdacityClient: NSObject {
             /* GUARD: Was there an error? */
             guard (error == nil) else {
                 print("There was an error with your request: \(error)")
+                completionHandler(success: false, error: error)
                 return
             }
             
@@ -195,8 +197,9 @@ class UdacityClient: NSObject {
             }
             
             /* Guard: Was there any data returned? */
-            guard let data = data else {
+            guard let _ = data else {
                 print("No data was returned by the request!")
+                completionHandler(success: false, error: error)
                 return
             }
             

@@ -11,6 +11,7 @@ import UIKit
 class TabBarController: UITabBarController {
     
     var parseController = ParseController.sharedInstance()
+    @IBOutlet weak var logoutButton: UIBarButtonItem!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -39,6 +40,7 @@ class TabBarController: UITabBarController {
     }
     
     @IBAction func logout(sender: AnyObject) {
+        
         let udacityClient = UdacityClient.sharedInstance()
         udacityClient.logoutFromSession(nil) { (success, error) -> Void in
             if success {

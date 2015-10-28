@@ -98,7 +98,7 @@ class PostingLinkViewController: UIViewController, MKMapViewDelegate, UITextFiel
                     self.showLoadingIndicatorForButton(self.shareButton, show: false)
                     return
                 } else {
-                    self.presentAlertWithTitle("Error", message: "Error when posting your location")
+                    self.presentAlertWithTitle("Error", message: "Error when posting your location. Please check your internet connection and try again")
                     self.showLoadingIndicatorForButton(self.shareButton, show: false)
                     return
                 }

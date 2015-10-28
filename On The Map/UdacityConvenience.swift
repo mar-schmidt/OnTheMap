@@ -28,7 +28,7 @@ extension UdacityClient {
                 if error.domain == "badCredentials" {
                     completionHandler(success: false, error: error, errorString: "Bad Credentials")
                 } else {
-                    completionHandler(success: false, error: error, errorString: "Problem occurred when contacting Udacity")
+                    completionHandler(success: false, error: error, errorString: "Problem occurred when contacting Udacity. Please check your internet connection and try again")
                 }
             } else {
                 print(result)
