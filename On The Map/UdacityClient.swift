@@ -43,6 +43,7 @@ class UdacityClient: NSObject {
         let urlString = Constants.BaseURLSecure + method
         let url = NSURL(string: urlString)!
         let request = NSMutableURLRequest(URL: url)
+        request.timeoutInterval = 10
         request.HTTPMethod = "POST"
         request.addValue("application/json", forHTTPHeaderField: "Accept")
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
@@ -57,14 +58,13 @@ class UdacityClient: NSObject {
             /* GUARD: Was there an error? */
             guard (error == nil) else {
                 print("There was an error with your request: \(error)")
+                completionHandler(result: nil, error: error)
                 return
             }
             
             /* Guard: Did we get a successful 2XX response? */
             guard let statusCode = (response as? NSHTTPURLResponse)?.statusCode where statusCode >= 200 && statusCode <= 299 else {
-                
-                
-                
+
                 if let response = response as? NSHTTPURLResponse {
                     print("Your request returned an invalid response! Status code: \(response.statusCode)!")
                     if (response.statusCode == 400 || response.statusCode == 403) {
@@ -78,13 +78,15 @@ class UdacityClient: NSObject {
                 }
                 
                 let userInfo = [NSLocalizedDescriptionKey : "Error in response from Udacity: '\(response?.description)'"]
-                completionHandler(result: NSNull(), error: NSError(domain: domain, code: 1, userInfo: userInfo))
+                completionHandler(result: nil, error: NSError(domain: domain, code: 1, userInfo: userInfo))
                 return
             }
             
             /* Guard: Was there any data returned? */
             guard let data = data else {
                 print("No data was returned by the request!")
+                let userInfo = [NSLocalizedDescriptionKey : "Error in response from Udacity: '\(response?.description)'"]
+                completionHandler(result: nil, error: NSError(domain: domain, code: 1, userInfo: userInfo))
                 return
             }
             

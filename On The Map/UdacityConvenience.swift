@@ -22,20 +22,18 @@ extension UdacityClient {
     func authenticateWithViewController(hostViewController: UIViewController, username:String!, password:String!, completionHandler: (success: Bool, error: NSError?, errorString: String?) -> Void) {
         
         self.postSessionId(username, password: password) { (success, result, error) -> Void in
-            var detailedError = error?.localizedDescription
+            let detailedError = error?.localizedDescription
             
-            if success {
-                print(result)
-            }
-            else {
-                if error?.domain == "badCredentials" {
-                    detailedError = "Bad Credentials"
-                    
+            if let error = error {
+                if error.domain == "badCredentials" {
+                    completionHandler(success: false, error: error, errorString: "Bad Credentials")
                 } else {
-                    detailedError = "Problem occurred when contacting Udacity"
+                    completionHandler(success: false, error: error, errorString: "Problem occurred when contacting Udacity")
                 }
+            } else {
+                print(result)
+                completionHandler(success: success, error: error, errorString: detailedError)
             }
-            completionHandler(success: success, error: error, errorString: detailedError)
         }
         
     }

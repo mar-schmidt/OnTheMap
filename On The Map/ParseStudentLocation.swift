@@ -40,10 +40,10 @@ struct ParseStudentLocation {
         latitude = dictionary[ParseClient.JSONResponseKeys.Latitude] as! NSNumber
         longitude = dictionary[ParseClient.JSONResponseKeys.Longitude] as! NSNumber
         if (dictionary[ParseClient.JSONResponseKeys.CreatedAt] != nil) {
-            createdAt = self.dateFromString(dictionary[ParseClient.JSONResponseKeys.CreatedAt] as! String)
+            createdAt = self.dateFromString(dictionary[ParseClient.JSONResponseKeys.CreatedAt] as? String)
         }
         if (dictionary[ParseClient.JSONResponseKeys.UpdatedAt] != nil) {
-            updatedAt = self.dateFromString(dictionary[ParseClient.JSONResponseKeys.UpdatedAt] as! String)
+            updatedAt = self.dateFromString(dictionary[ParseClient.JSONResponseKeys.UpdatedAt] as? String)
         }
         
     }
@@ -64,28 +64,15 @@ struct ParseStudentLocation {
     }
     
     /* Helper: Create NSDate object from String */
-    func dateFromString(dateString: String) -> NSDate {
-        let dateFormatter = NSDateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.AAA'Z'" //"2015-10-09T00:20:27.444Z"
-        let date = dateFormatter.dateFromString(dateString)
-        
-        return date!
+    func dateFromString(dateString: String?) -> NSDate {
+        if let dateString = dateString {
+            let dateFormatter = NSDateFormatter()
+            dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.AAA'Z'" //"2015-10-09T00:20:27.444Z"
+            let date = dateFormatter.dateFromString(dateString)
+            
+            return date!
+        } else {
+            return NSDate()
+        }
     }
 }
-
-/*
-{
-"results": [
-{
-    "mediaURL": "http://www.scienceanimated.com",
-    "firstName": "KM",
-    "longitude": -122.269960460253,
-    "uniqueKey": "1234",
-    "latitude": 41.236164095380403,
-    "objectId": "WuLhlkFI1s",
-    "createdAt": "2015-10-09T01:55:24.146Z",
-    "updatedAt": "2015-10-09T01:55:24.146Z",
-    "mapString": "Dunsmuir, CA",
-    "lastName": "P"
-},
-*/

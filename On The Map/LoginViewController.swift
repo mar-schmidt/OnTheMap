@@ -86,12 +86,12 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
         self.showLoadingView(true)
         
         UdacityClient.sharedInstance().authenticateWithViewController(self, username: emailTextField.text, password: passwordTextField.text) { (success, error, errorString) -> Void in
-            if success {
-                self.showLoadingView(false)
-                self.completeLogin()
-            } else {
+            if let error = error {
                 self.showLoadingView(false)
                 self.displayError(error, errorString: errorString)
+            } else {
+                self.showLoadingView(false)
+                self.completeLogin()
             }
         }
     }
@@ -124,14 +124,22 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
                 self.errorTextLabel.text = errorString
                 if let error = error {
                     if error.domain == "badCredentials" {
-                        let alertController = UIAlertController(title: "Error", message: "You have entered wrong credentials. Please try again", preferredStyle: UIAlertControllerStyle.Alert)
-                        let dismissAction = UIAlertAction(title: "OK", style: UIAlertActionStyle.Cancel, handler: nil)
-                        alertController.addAction(dismissAction)
-                        
-                        self.presentViewController(alertController, animated: true, completion: nil)
+                        self.presentAlertViewWithTitle("Error", message: "You have entered invalid credentials. Please try again")
+                    } else {
+                        self.presentAlertViewWithTitle("Error", message: errorString)
                     }
                 }
             }
+        })
+    }
+    
+    func presentAlertViewWithTitle(title: String, message: String) {
+        dispatch_async(dispatch_get_main_queue(), {
+            let alertController = UIAlertController(title: title, message: message, preferredStyle: UIAlertControllerStyle.Alert)
+            let dismissAction = UIAlertAction(title: "OK", style: UIAlertActionStyle.Cancel, handler: nil)
+            alertController.addAction(dismissAction)
+            
+            self.presentViewController(alertController, animated: true, completion: nil)
         })
     }
     
@@ -147,24 +155,6 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
         if (textField.tag == 1 && textField.text == "") {
             throw InputError.MissingPassword
         }
-        
-        /*
-        if textField.tag == 0 {
-            if emailTextField.text == "" {
-                errorTextLabel.text = "Email is missing..."
-                return false
-            } else if !isValidEmail(emailTextField.text!) {
-                errorTextLabel.text = "Incorrect email format..."
-                return false
-            }
-        } else if textField.tag == 1 {
-             if passwordTextField.text == "" {
-                errorTextLabel.text = "Password is missing..."
-                return false
-            }
-        }
-        return true
-        */
     }
     
     /* Helper: Show/Hide loading View */
