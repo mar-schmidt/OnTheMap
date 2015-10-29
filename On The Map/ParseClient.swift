@@ -43,6 +43,7 @@ class ParseClient: NSObject {
         print(urlString)
         let url = NSURL(string: urlString)!
         let request = NSMutableURLRequest(URL: url)
+        request.timeoutInterval = 10
         request.addValue(ParseClient.Constants.AppID, forHTTPHeaderField: "X-Parse-Application-Id")
         request.addValue(ParseClient.Api.Key, forHTTPHeaderField: "X-Parse-REST-API-Key")
         
@@ -52,6 +53,7 @@ class ParseClient: NSObject {
             /* GUARD: Was there an error? */
             guard (error == nil) else {
                 print("There was an error with your request: \(error)")
+                completionHandler(result: nil, error: error)
                 return
             }
             
@@ -64,12 +66,16 @@ class ParseClient: NSObject {
                 } else {
                     print("Your request returned an invalid response!")
                 }
+                
+                completionHandler(result: nil, error: error)
                 return
             }
             
             /* GUARD: Was there any data returned? */
             guard let data = data else {
                 print("No data was returned by the request!")
+                completionHandler(result: nil, error: error)
+                
                 return
             }
             
