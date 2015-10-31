@@ -67,7 +67,8 @@ class ParseClient: NSObject {
                     print("Your request returned an invalid response!")
                 }
                 
-                completionHandler(result: nil, error: error)
+                let userInfo = [NSLocalizedDescriptionKey : "Invalid response from server \(response?.description)'"]
+                completionHandler(result: nil, error: NSError(domain: "invalidResponseCompletionHandler", code: 1, userInfo: userInfo))
                 return
             }
             
@@ -133,7 +134,8 @@ class ParseClient: NSObject {
                 } else {
                     print("Your request returned an invalid response!")
                 }
-                completionHandler(result: nil, error: error)
+                let userInfo = [NSLocalizedDescriptionKey : "Invalid response from server \(response?.description)'"]
+                completionHandler(result: nil, error: NSError(domain: "invalidResponseCompletionHandler", code: 1, userInfo: userInfo))
                 return
             }
             
